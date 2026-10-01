@@ -7,7 +7,7 @@ Connect an AI assistant to current public children's activities in Florianópoli
 **Remote MCP:** `https://oiair.com.br/api/mcp`  
 **Transport:** Streamable HTTP · public reading · no API key
 
-[MCP guide](https://oiair.com.br/en/developers/mcp/) · [API guide](https://oiair.com.br/en/developers/api/) · [Live OpenAPI](https://oiair.com.br/api/v1/openapi.json) · [Live capabilities](https://oiair.com.br/api/v1/agent-capabilities)
+[MCP guide](https://oiair.com.br/en/developers/mcp/) · [API guide](https://oiair.com.br/en/developers/api/) · [Live OpenAPI](https://oiair.com.br/api/v1/openapi.json) · [Live capabilities](https://oiair.com.br/api/v1/agent-capabilities) · [MCP Registry listing](https://registry.modelcontextprotocol.io/v0.1/servers/br.com.oiair%2Fmarketplace/versions/0.1.0)
 
 ## Released tools
 
@@ -27,7 +27,7 @@ Preserve each group's source, `checkedAt` and `validUntil`. Use exact publicatio
 
 ## Connect
 
-For a host supporting remote MCP, add the URL above using its supported connection settings. [Configuration examples](config/README.md) cover Codex and VS Code. Host settings, account permissions and review may affect access. These examples do not claim installation or publication in any third-party catalog.
+For a host supporting remote MCP, add the URL above using its supported connection settings. [Configuration examples](config/README.md) cover Codex and VS Code. Host settings, account permissions and review may affect access. The MCP Registry listing supports discovery; installation and publication in a host's catalog remain separate.
 
 Try: “Find jiu-jitsu activities for an 8-year-old in Florianópolis. Show current published conditions and a link to request a visit.”
 
@@ -49,7 +49,7 @@ The examples make public read requests only. The MCP example searches, reads the
 
 - [public-read.openapi.json](contracts/public-read.openapi.json): implemented REST contract, API version `1.0.0`.
 - [mcp-tools.json](contracts/mcp-tools.json): released tool descriptions and input/output schemas.
-- [server.json](server.json): MCP Registry manifest, server version `0.1.0`. Registry publication is a separate action; the presence of this file does not prove a listing exists.
+- [server.json](server.json): MCP Registry manifest. Version `0.1.0` of `br.com.oiair/marketplace` was published and verified as active on October 1, 2026. [Read the official Registry entry](https://registry.modelcontextprotocol.io/v0.1/servers/br.com.oiair%2Fmarketplace/versions/0.1.0).
 
 Official protocol clients verified against the public endpoint: `@modelcontextprotocol/client` `2.0.0` with `2026-07-28`, and `@modelcontextprotocol/sdk` `1.30.0` with `2025-11-25`.
 

@@ -7,7 +7,7 @@ Conecte um assistente de IA às atividades infantis públicas e atuais de Floria
 **MCP remoto:** `https://oiair.com.br/api/mcp`  
 **Transporte:** Streamable HTTP · consulta pública · sem chave de API
 
-[Guia MCP](https://oiair.com.br/developers/mcp/) · [Guia API](https://oiair.com.br/developers/api/) · [OpenAPI atual](https://oiair.com.br/api/v1/openapi.json) · [Capacidades atuais](https://oiair.com.br/api/v1/agent-capabilities)
+[Guia MCP](https://oiair.com.br/developers/mcp/) · [Guia API](https://oiair.com.br/developers/api/) · [OpenAPI atual](https://oiair.com.br/api/v1/openapi.json) · [Capacidades atuais](https://oiair.com.br/api/v1/agent-capabilities) · [Listagem no MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/br.com.oiair%2Fmarketplace/versions/0.1.0)
 
 ## Ferramentas disponíveis
 
@@ -27,7 +27,7 @@ Preserve a fonte, `checkedAt` e `validUntil` de cada turma. Use os IDs e versõe
 
 ## Conectar
 
-Em um cliente compatível com MCP remoto, adicione a URL acima nas configurações de conexão. Os [exemplos de configuração](config/README.md) incluem Codex e VS Code. Configurações do cliente, permissões da conta e análise da plataforma podem afetar o acesso. Os exemplos não significam instalação ou publicação em catálogos de terceiros.
+Em um cliente compatível com MCP remoto, adicione a URL acima nas configurações de conexão. Os [exemplos de configuração](config/README.md) incluem Codex e VS Code. Configurações do cliente, permissões da conta e análise da plataforma podem afetar o acesso. A listagem no MCP Registry ajuda na descoberta; a instalação e a publicação no catálogo de cada cliente continuam sendo ações separadas.
 
 Experimente: “Encontre atividades de jiu-jitsu para uma criança de 8 anos em Florianópolis. Mostre as condições publicadas atuais e um link para solicitar uma visita.”
 
@@ -49,7 +49,7 @@ Os exemplos fazem apenas consultas públicas. O exemplo MCP busca atividades, co
 
 - [public-read.openapi.json](contracts/public-read.openapi.json): contrato REST implementado, versão da API `1.0.0`.
 - [mcp-tools.json](contracts/mcp-tools.json): descrições e schemas das ferramentas publicadas.
-- [server.json](server.json): manifesto do MCP Registry, versão do servidor `0.1.0`. A publicação no Registry é uma ação separada; este arquivo não comprova que a listagem existe.
+- [server.json](server.json): manifesto do MCP Registry. A versão `0.1.0` de `br.com.oiair/marketplace` foi publicada e verificada como ativa em 1º de outubro de 2026. [Consulte a entrada no Registry oficial](https://registry.modelcontextprotocol.io/v0.1/servers/br.com.oiair%2Fmarketplace/versions/0.1.0).
 
 Clientes oficiais verificados no endpoint público: `@modelcontextprotocol/client` `2.0.0` com `2026-07-28`, e `@modelcontextprotocol/sdk` `1.30.0` com `2025-11-25`.
 
