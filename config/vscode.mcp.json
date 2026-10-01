@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "oiair": {
+      "type": "http",
+      "url": "https://oiair.com.br/api/mcp"
+    }
+  }
+}

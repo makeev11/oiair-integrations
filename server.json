@@ -1,0 +1,14 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "br.com.oiair/marketplace",
+  "title": "OiAir activities",
+  "description": "Find children's activities in Florianópolis, read published conditions and get request-form links.",
+  "version": "0.1.0",
+  "websiteUrl": "https://oiair.com.br/developers/mcp/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://oiair.com.br/api/mcp"
+    }
+  ]
+}

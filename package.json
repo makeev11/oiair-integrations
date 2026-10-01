@@ -1,0 +1,23 @@
+{
+  "name": "oiair-integrations",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Public OiAir MCP and REST integration examples and contracts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/makeev11/oiair-integrations.git"
+  },
+  "engines": {"node": ">=24"},
+  "scripts": {
+    "example:mcp": "node examples/mcp-client.mjs",
+    "example:mcp:v1": "node examples/mcp-client.mjs --v1",
+    "example:api": "node examples/public-api.mjs",
+    "verify:live": "node scripts/verify-live.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/client": "2.0.0",
+    "@modelcontextprotocol/sdk": "1.30.0"
+  }
+}

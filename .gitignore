@@ -1,0 +1,7 @@
+node_modules/
+.local/
+.env
+.env.*
+.mcpregistry_*
+*.pem
+.DS_Store

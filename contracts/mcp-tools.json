@@ -1,0 +1,877 @@
+[
+  {
+    "name": "search_activities",
+    "description": "Search OiAir public activities using its current search API, ranking and filters. Age is inclusive; weekdays use Sunday=0 through Saturday=6, and any selected day may match. Age, day and time must match the same published group. Keep unresolved constraints and unknown availability; results do not confirm a place.",
+    "inputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "locale": {
+          "type": "string",
+          "enum": [
+            "pt-BR",
+            "pt-PT",
+            "en",
+            "ru",
+            "es"
+          ]
+        },
+        "filters": {
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "neighborhood": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "age": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 18
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "days": {
+              "maxItems": 7,
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 6
+              }
+            },
+            "period": {
+              "type": "string",
+              "enum": [
+                "",
+                "manha",
+                "tarde",
+                "noite"
+              ]
+            },
+            "after17": {
+              "type": "boolean"
+            },
+            "categories": {
+              "maxItems": 8,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "danca",
+                  "esportes",
+                  "artes",
+                  "musica",
+                  "ciencia",
+                  "linguas",
+                  "natureza",
+                  "projetos"
+                ]
+              }
+            },
+            "bounds": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "price": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "lte",
+                        "gte",
+                        "eq"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "currency": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 60
+                    }
+                  },
+                  "required": [
+                    "operator",
+                    "amount",
+                    "currency",
+                    "unit"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      },
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "organization": {
+                "type": "string"
+              },
+              "publishedOffers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "publicationId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "offeringId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "source": {
+                      "type": "string",
+                      "const": "organization_confirmation"
+                    },
+                    "checkedAt": {
+                      "type": "string"
+                    },
+                    "validUntil": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "publicationId",
+                    "version",
+                    "offeringId",
+                    "source",
+                    "checkedAt",
+                    "validUntil"
+                  ],
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "required": [
+              "id",
+              "organization",
+              "publishedOffers"
+            ],
+            "additionalProperties": {}
+          }
+        },
+        "appliedFilters": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": {}
+        },
+        "queryStatus": {
+          "type": "string"
+        },
+        "nextCursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "bookingSemantics": {
+          "type": "object",
+          "properties": {
+            "availability": {
+              "type": "string",
+              "const": "unknown"
+            },
+            "bookingMode": {
+              "type": "string",
+              "const": "request_confirmation"
+            },
+            "createsRequest": {
+              "type": "boolean",
+              "const": false
+            },
+            "reservesSeat": {
+              "type": "boolean",
+              "const": false
+            },
+            "requiresOrganizationConfirmation": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "availability",
+            "bookingMode",
+            "createsRequest",
+            "reservesSeat",
+            "requiresOrganizationConfirmation"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "items",
+        "appliedFilters",
+        "queryStatus",
+        "nextCursor",
+        "bookingSemantics"
+      ],
+      "additionalProperties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "get_organization",
+    "description": "Read the current public organization profile and its address-scoped published groups, prices and source timestamps. This exposes published facts only and does not provide staff, parent or participant data.",
+    "inputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "organizationId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "locale": {
+          "type": "string",
+          "enum": [
+            "pt-BR",
+            "pt-PT",
+            "en",
+            "ru",
+            "es"
+          ]
+        }
+      },
+      "required": [
+        "organizationId"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "syncedAt": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "string"
+        },
+        "item": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "organization": {
+              "type": "string"
+            },
+            "publishedOffers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "publicationId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "offeringId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "source": {
+                    "type": "string",
+                    "const": "organization_confirmation"
+                  },
+                  "checkedAt": {
+                    "type": "string"
+                  },
+                  "validUntil": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "publicationId",
+                  "version",
+                  "offeringId",
+                  "source",
+                  "checkedAt",
+                  "validUntil"
+                ],
+                "additionalProperties": {}
+              }
+            }
+          },
+          "required": [
+            "id",
+            "organization",
+            "publishedOffers"
+          ],
+          "additionalProperties": {}
+        },
+        "bookingSemantics": {
+          "type": "object",
+          "properties": {
+            "availability": {
+              "type": "string",
+              "const": "unknown"
+            },
+            "bookingMode": {
+              "type": "string",
+              "const": "request_confirmation"
+            },
+            "createsRequest": {
+              "type": "boolean",
+              "const": false
+            },
+            "reservesSeat": {
+              "type": "boolean",
+              "const": false
+            },
+            "requiresOrganizationConfirmation": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "availability",
+            "bookingMode",
+            "createsRequest",
+            "reservesSeat",
+            "requiresOrganizationConfirmation"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "revision",
+        "syncedAt",
+        "generation",
+        "item",
+        "bookingSemantics"
+      ],
+      "additionalProperties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "list_offerings",
+    "description": "List all current published groups belonging to one public organization at its current address. Each group retains its exact publication ID, version, schedule, prices and confirmation timestamps; an empty list does not authorize substituting another group.",
+    "inputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "organizationId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "locale": {
+          "type": "string",
+          "enum": [
+            "pt-BR",
+            "pt-PT",
+            "en",
+            "ru",
+            "es"
+          ]
+        }
+      },
+      "required": [
+        "organizationId"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "syncedAt": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "string"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "publicationId": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "version": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "offeringId": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "source": {
+                "type": "string",
+                "const": "organization_confirmation"
+              },
+              "checkedAt": {
+                "type": "string"
+              },
+              "validUntil": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "publicationId",
+              "version",
+              "offeringId",
+              "source",
+              "checkedAt",
+              "validUntil"
+            ],
+            "additionalProperties": {}
+          }
+        },
+        "bookingSemantics": {
+          "type": "object",
+          "properties": {
+            "availability": {
+              "type": "string",
+              "const": "unknown"
+            },
+            "bookingMode": {
+              "type": "string",
+              "const": "request_confirmation"
+            },
+            "createsRequest": {
+              "type": "boolean",
+              "const": false
+            },
+            "reservesSeat": {
+              "type": "boolean",
+              "const": false
+            },
+            "requiresOrganizationConfirmation": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "availability",
+            "bookingMode",
+            "createsRequest",
+            "reservesSeat",
+            "requiresOrganizationConfirmation"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "revision",
+        "syncedAt",
+        "generation",
+        "organizationId",
+        "items",
+        "bookingSemantics"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "get_offering",
+    "description": "Read one exact, current published group by publication ID. Optionally require its expected version. Withdrawn, expired, changed-address or stale-version groups fail rather than falling back to another group. Published availability remains unknown.",
+    "inputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "publicationId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "expectedVersion": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "locale": {
+          "type": "string",
+          "enum": [
+            "pt-BR",
+            "pt-PT",
+            "en",
+            "ru",
+            "es"
+          ]
+        }
+      },
+      "required": [
+        "publicationId"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "syncedAt": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "string"
+        },
+        "item": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "organizationId": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "version": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "freshness": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "const": "organization_confirmation"
+                },
+                "checkedAt": {
+                  "type": "string"
+                },
+                "validUntil": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "source",
+                "checkedAt",
+                "validUntil"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "id",
+            "organizationId",
+            "version",
+            "freshness"
+          ],
+          "additionalProperties": {}
+        },
+        "bookingSemantics": {
+          "type": "object",
+          "properties": {
+            "availability": {
+              "type": "string",
+              "const": "unknown"
+            },
+            "bookingMode": {
+              "type": "string",
+              "const": "request_confirmation"
+            },
+            "createsRequest": {
+              "type": "boolean",
+              "const": false
+            },
+            "reservesSeat": {
+              "type": "boolean",
+              "const": false
+            },
+            "requiresOrganizationConfirmation": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "availability",
+            "bookingMode",
+            "createsRequest",
+            "reservesSeat",
+            "requiresOrganizationConfirmation"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "revision",
+        "syncedAt",
+        "generation",
+        "item",
+        "bookingSemantics"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "get_booking_link",
+    "description": "Prepare a canonical PT-BR OiAir form link for one exact organization, publication and expected version. Trial requires that the selected group offers a trial. Opening the link and submitting a request are separate actions; this tool neither submits a request nor reserves or confirms a place.",
+    "inputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "organizationId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "publicationId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "expectedVersion": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "visit": {
+          "type": "string",
+          "enum": [
+            "trial",
+            "regular"
+          ]
+        }
+      },
+      "required": [
+        "organizationId",
+        "publicationId",
+        "expectedVersion"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "organizationId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "publicationId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "offeringId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "version": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "visit": {
+          "type": "string",
+          "enum": [
+            "trial",
+            "regular"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "const": "organization_confirmation"
+        },
+        "checkedAt": {
+          "type": "string"
+        },
+        "validUntil": {
+          "type": "string"
+        },
+        "bookingSemantics": {
+          "type": "object",
+          "properties": {
+            "availability": {
+              "type": "string",
+              "const": "unknown"
+            },
+            "bookingMode": {
+              "type": "string",
+              "const": "request_confirmation"
+            },
+            "createsRequest": {
+              "type": "boolean",
+              "const": false
+            },
+            "reservesSeat": {
+              "type": "boolean",
+              "const": false
+            },
+            "requiresOrganizationConfirmation": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "availability",
+            "bookingMode",
+            "createsRequest",
+            "reservesSeat",
+            "requiresOrganizationConfirmation"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "organizationId",
+        "publicationId",
+        "offeringId",
+        "version",
+        "url",
+        "visit",
+        "source",
+        "checkedAt",
+        "validUntil",
+        "bookingSemantics"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  }
+]
